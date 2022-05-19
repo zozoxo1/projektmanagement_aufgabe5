@@ -7,8 +7,8 @@ class KgVTest
 {
    
    /**
-    * Fehler: Alles wurde falsch berechnet
-    * Fehlerbehebung: KgV neu geschrieben, Fehlermeldungen überarbeitet
+    * Fehler: Ausgerechnete Potenzen wurden nicht auf Ergebnis multipliziert
+    * Fehlerbehebung: Ergebnis lcM *= pow -> Vorher: lcM = pow
     */
    
    @Test

@@ -40,13 +40,55 @@ public final class KgV
          throw new IllegalArgumentException("Argument b is smaller than 1: " + b);
       }
       
-      long max = a < b ? b : a ;
-      long min = a < b ? a : b ;
-      long i;
-
-      for(i=1; (i*max)%min != 0; i++);
+   // Primzahlen und deren Anzahl aus denen a besteht
+      HashMap<Integer, Integer> hashA =createHash(PrimeNumbers.splitPrimeNumberFactors(a));
       
-      return i*max;
+      // Primzahlen und deren Anzahl aus denen b besteht
+      HashMap<Integer, Integer> hashB =createHash(PrimeNumbers.splitPrimeNumberFactors(b));
+      
+      // Liste aller Primzahlen, aus denen a und b besteht mit dem jeweils höchsten Vorkommen in a oder b
+      HashMap<Integer, Integer> resultHash = new HashMap<Integer, Integer>();
+      
+      // Liste der Primzahlen, aus denen a besteht, dem Ergebnishash zufügen.
+      // Falls Primzahl auch in b enthalten ist, jeweils höheres Vorkommen zufügen.
+      for (Integer key : hashA.keySet())
+      {
+         if (!hashB.containsKey(key))
+         {
+            // Primzahl kommt nur in a vor: Primzahl mir Anzahl der Vorkommen in a der Ergebnisliste zufügen
+            resultHash.put(key, hashA.get(key));
+         }
+         else
+         {
+            // Primzahl kommt a und b vor: 
+            // Höhere Anzahl der Vorkommen in a oder b der Ergebnisliste zufügen
+            // und Primzahl aus der Liste der Primzahlen aus b entfernen
+            resultHash.put(key, hashA.get(key) > hashB.get(key) ? hashA.get(key) : hashB.get(key));
+            hashB.remove(key);
+         }
+      }
+      
+      // Nach dem Entfernen aller Primzahlen aus b, die auch in a vorkommen, enthält der Hash von b nur
+      // noch Primzahlen, die NICHT in a enthalten sind. 
+      for (Integer key : hashB.keySet())
+      {
+            resultHash.put(key, hashB.get(key));
+      }
+      
+      long lcM = 1;
+      for (Integer key : resultHash.keySet())
+      {
+            
+         long pow = 1;
+         
+         // Folgendes berechnet Math.pow(key, resultHash.get(key))
+         // Bibliotheksmethode weicht für große Werte durch Ungenauigkeit ab!
+         for(int cnt=0; cnt<resultHash.get(key); cnt++){
+            pow *= key;
+         }
+         lcM *= pow;
+      }
+      return lcM;
    }
 
    /**
